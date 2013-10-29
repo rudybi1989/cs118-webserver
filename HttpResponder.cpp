@@ -13,7 +13,7 @@ HttpResponder::HttpResponder(){
 
 ssize_t HttpResponder::readRequest(int sockFd){
 
-	char tempBuffer[1024];
+	char tempBuffer[HttpResponder::BYTE_READ_SIZE];
 	memset(&tempBuffer, '0', sizeof(tempBuffer));
 	ssize_t bytesRead = 0;
 	ssize_t totalBytesRead = 0;
@@ -30,6 +30,8 @@ ssize_t HttpResponder::readRequest(int sockFd){
 
 	totalBytesRead += bytesRead;
 
+	std::cout << std::endl << "Total Bytes Read is: " << totalBytesRead << std::endl;
+
 	mRequestData.clear();
 	mRequestData.append(tempBuffer);
 
@@ -38,6 +40,8 @@ ssize_t HttpResponder::readRequest(int sockFd){
 
 void HttpResponder::logRequestToConsole(){
 
+	std::cout << "The request data size is: " << mRequestData.length() << std::endl;
+	std::cout << std::endl;
 	std::cout << mRequestData << std::endl;
 
 	return;
@@ -45,15 +49,7 @@ void HttpResponder::logRequestToConsole(){
 
 void HttpResponder::processRequest() {
 
-	char* msgBuffer = new char[mRequestData.size() + 1];
-
-	msgBuffer = (char*) mRequestData.c_str();
-
-	ClientRequestMsgDecode msgDecoder(msgBuffer);
-
-	//Free buffer
-	delete[] msgBuffer;
-
+	ClientRequestMsgDecode msgDecoder((char*) mRequestData.c_str());
 };
 
 void HttpResponder::generatePacket(){};

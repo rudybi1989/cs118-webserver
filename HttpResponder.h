@@ -6,7 +6,7 @@
 class HttpResponder {
 	
 	private:
-		static const int BYTE_READ_SIZE = 256; //read 256 bytes at a type
+		static const int BYTE_READ_SIZE = 2048; //read 256 bytes at a time
 
 	public:
 
