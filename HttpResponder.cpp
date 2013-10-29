@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include "HttpResponder.h"
+#include "parser.hpp"
+
 
 
 
@@ -41,7 +43,18 @@ void HttpResponder::logRequestToConsole(){
 	return;
 }
 
-void HttpResponder::processRequest() {};
+void HttpResponder::processRequest() {
+
+	char* msgBuffer = new char[mRequestData.size() + 1];
+
+	msgBuffer = (char*) mRequestData.c_str();
+
+	ClientRequestMsgDecode msgDecoder(msgBuffer);
+
+	//Free buffer
+	delete[] msgBuffer;
+
+};
 
 void HttpResponder::generatePacket(){};
 
