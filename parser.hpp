@@ -40,6 +40,7 @@ public:
   HTTP_Version_t     HTTP_Version; /*1.0 or 1.1 */
   std::string        RequestedFileLocation;
   HTTP_Connection_t  HTTP_ConnectionType; /* keep-alive or closed */
+  bool               EndSignatureFound;
 };
 
 #endif
