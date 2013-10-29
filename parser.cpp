@@ -17,6 +17,7 @@ ClientRequestMsgDecode::ClientRequestMsgDecode (char * Msg)
 
   int len = strlen(Msg), i;
   /*Default values*/
+  EndSignatureFound = false;
   HTTP_Request = HTTP_REQ_NA;
   RequestedFileLocation.assign("");
   HTTP_Version = HTTP_V_1_1;
@@ -67,12 +68,14 @@ ClientRequestMsgDecode::ClientRequestMsgDecode (char * Msg)
     if (strstr(ConnectionType, "Connection: keep-alive"))
       HTTP_ConnectionType = CONNECTION_KEEP_ALIVE;
   }
+  char *EndSignature = strstr(Msg, "\r\n\r\n");
   cout << "**Parser Output**:" <<endl;
   cout << "FileLocation: " << FileLocation << endl;
   cout << "Req:" << HTTP_Request << " =" <<Request << endl;
   cout << "Ver:" << HTTP_Version << " =" << HTTPVersion << endl;
   cout << "ConnType:"<< HTTP_ConnectionType << "=\"" << ConnectionType << "\""<< endl; 
-  
+  if (EndSignature != 0) EndSignatureFound = true;
+  cout << "LastSet =" << EndSignatureFound << "END"<<endl;
   // Free the buffers.
   delete [] Request;
   delete [] FileLocation;
@@ -85,7 +88,7 @@ void ClientRequestMsgDecode::GetNextToken
 {
   for ( ; ;)
   {
-    if ( Source != 0 && *Source != 0 && *Source != SourceEnd )
+    if ( Source != 0 && *Source != 0 && *Source <= SourceEnd )
     {
       if (**Source == ' ' || **Source == '\n' || **Source == '\r' )
       {
