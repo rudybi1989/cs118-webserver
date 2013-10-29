@@ -22,6 +22,10 @@ class HttpResponder {
 		//Print the request to console
 		void logRequestToConsole();
 
+		void generatePacket();
+
+		void processRequest();
+
 		int writeOnTCP(int sockFd);
 };
 

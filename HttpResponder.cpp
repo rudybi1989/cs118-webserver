@@ -41,6 +41,10 @@ void HttpResponder::logRequestToConsole(){
 	return;
 }
 
+void HttpResponder::processRequest() {};
+
+void HttpResponder::generatePacket(){};
+
 int HttpResponder::writeOnTCP(int sockFd)
 {
 	std::string output = "Hello World!";
