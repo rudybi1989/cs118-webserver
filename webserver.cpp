@@ -1,20 +1,16 @@
 /* A simple server in the internet domain using TCP
    The port number is 2468 */
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 #include <sys/types.h> 
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <iostream>
-#include <string.h>
-
+#include "HttpResponder.h"
 
 #define SERVER_PORT 2468 // static server port
 #define MAX_QUEUED_CONNECTIONS 5 // number of concurrent connections
-#define RECEIVE_BUFFER_SIZE 1024 //1kb buffer size (more than enough)
 
 using namespace std;
 
@@ -26,7 +22,6 @@ int main(int argc, char *argv[])
     sockaddr_in serverAddr, clientAddr;
     socklen_t clientLength;
     fd_set activeFdSet;
-    char inputBuffer[RECEIVE_BUFFER_SIZE];
     string output;
 
     cout << "Starting web server..." << endl;
@@ -34,7 +29,11 @@ int main(int argc, char *argv[])
     memset(&serverAddr, 0, sizeof(serverAddr)); //clear
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(SERVER_PORT);
-    serverAddr.sin_addr.s_addr = INADDR_ANY; //localhost
+    serverAddr.sin_addr.s_addr = INADDR_ANY;
+
+    HttpResponder hr;
+
+
 
     //create, bind, listen to socket and check for errors
     socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -89,14 +88,9 @@ int main(int argc, char *argv[])
 
         if(FD_ISSET(newSocket, &activeFdSet))
         {
-            memset(&inputBuffer, 0, RECEIVE_BUFFER_SIZE); //clear input buffer
-            
-            //hpg.readRequest(newSocket);
-            //hpg.logRequestToConsole();
-            read(newSocket, inputBuffer, RECEIVE_BUFFER_SIZE);
-            cout << inputBuffer << endl;
-            output = "Hello World!";
-            write(newSocket, output.c_str(), output.length());
+            hr.readRequest(newSocket);
+            hr.logRequestToConsole();
+            hr.writeOnTCP(newSocket);
             close(newSocket);
         }
     }
