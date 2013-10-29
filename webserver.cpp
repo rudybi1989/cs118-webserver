@@ -8,7 +8,6 @@
 #include <netinet/in.h>
 #include <iostream>
 #include <string.h>
-#include "parser.hpp"
 #include "HttpResponder.h"
 
 #define SERVER_PORT 2468 // static server port
@@ -92,6 +91,7 @@ int main(int argc, char *argv[])
         {
             hr.readRequest(newSocket);
             hr.logRequestToConsole();
+            hr.processRequest();
             hr.writeOnTCP(newSocket);
             close(newSocket);
         }

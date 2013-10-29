@@ -11,7 +11,9 @@ all: $(EXECUTABLE)
 
 # Defining constants
 WEBSERVER_SOURCES=webserver.cpp \
-                  parser.cpp
+				  parser.cpp \
+				  HttpResponder.cpp
+
 WEBSERVER_OBJECTS=$(subst .cpp,.o,$(WEBSERVER_SOURCES))
 
 EXECUTABLE=webserver
