@@ -10,7 +10,7 @@
 #include <netinet/in.h>
 #include <iostream>
 #include <string.h>
-
+#include "parser.hpp"
 
 #define SERVER_PORT 2468 // static server port
 #define MAX_QUEUED_CONNECTIONS 5 // number of concurrent connections
