@@ -6,12 +6,18 @@
 class HttpResponder {
 	
 	private:
-		static const int BYTE_READ_SIZE = 2048; //read 256 bytes at a time
-
-	public:
-
+		static const int BYTE_READ_SIZE = 2048; //read 2048 bytes at a time
 		//Member Variables
 		std::string mRequestData;
+		std::string mOutputHeader;
+		std::string mOutputData;
+
+
+
+		int sendHeader(int sockFd);
+
+
+	public:
 
 		//Member Functions
 		HttpResponder();
