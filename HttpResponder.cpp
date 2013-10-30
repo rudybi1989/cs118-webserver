@@ -35,8 +35,6 @@ ssize_t HttpResponder::readRequest(int sockFd){
 
 	totalBytesRead += bytesRead;
 
-	std::cout << std::endl << "Total Bytes Read is: " << totalBytesRead << std::endl;
-
 	mRequestData.clear();
 	mRequestData.append(tempBuffer);
 
@@ -45,10 +43,7 @@ ssize_t HttpResponder::readRequest(int sockFd){
 
 void HttpResponder::logRequestToConsole(){
 
-	std::cout << "The request data size is: " << mRequestData.length() << std::endl;
-	std::cout << std::endl;
 	std::cout << mRequestData << std::endl;
-
 	return;
 }
 
@@ -81,13 +76,13 @@ int HttpResponder::processRequest() {
 	if(msgDecoder.HTTP_Request != HTTP_REQ_GET) //Server only supports GET requests
 	{
 		httpStatus = "501 Not Implemented"; 
-		fileLocation = "501.html";
+		fileLocation = "static/501.html";
 	}
 
 	if(!msgDecoder.EndSignatureFound) //the HTTP request message was not valid
 	{
 		httpStatus = "400 Bad Request"; 
-		fileLocation = "400.html";
+		fileLocation = "static/400.html";
 	}
 
 	requestedContentSize = getFileSize(fileLocation);
@@ -95,7 +90,7 @@ int HttpResponder::processRequest() {
 	if(requestedContentSize < 0) //file does not exist
 	{
 		httpStatus = "404 File Not Found";
-		fileLocation = "404.html";
+		fileLocation = "static/404.html";
 	}
 
 	contentType = getContentType(fileLocation);
@@ -110,7 +105,7 @@ int HttpResponder::processRequest() {
 		mOutputHeader.append("Content-Length: " + contentSize_ss.str() + CRLF);
 	}
 
-	mOutputHeader.append("Connection: close" + CRLF); //always close connection
+	mOutputHeader.append("Connection: close" + CRLF); //always close connection for our server
     mOutputHeader.append(CRLF); //end message
 
    
@@ -124,11 +119,13 @@ int HttpResponder::processRequest() {
 
     if(requestedContentSize > 0)
     {
-    //Write Data
-	  char *buffer = new char[requestedContentSize];
-	  int blockSize = requestedContentSize;
+      //Write Data
+	  char buffer[HttpResponder::BYTE_READ_SIZE]; 
+	  int blockSize = HttpResponder::BYTE_READ_SIZE;
 	  int bytesRemaining = 0;
 	  int bytesToRead = 0;
+	  int bytesToWrite = 0;
+	  int bytesWritten = 0;
 
 	  ifstream inStream(fileLocation.c_str(), std::ios::in | std::ios::binary);
 	  if(inStream.good()) 
@@ -143,17 +140,24 @@ int HttpResponder::processRequest() {
 
 	      if (blockSize > bytesToRead)
 	        bytesToRead = length;
+	    
 	      else
 	        bytesToRead = blockSize;
 
 	      inStream.read(buffer, bytesToRead);
 
 	      bytesRemaining -= bytesToRead;
-	      write(mSockFd, buffer, bytesToRead);
+	      bytesToWrite = bytesToRead; // the amount of bytes read should be the number of bytes to write now.
+	      
+	      bytesWritten = write(mSockFd, buffer, bytesToWrite);
+
+	      /*while(bytesToWrite > 0) //write into socket until all data
+	      {
+	      	bytesToWrite -= bytesWritten;
+	      }*/
 	    }
 
 	    inStream.close();
-	    delete[] buffer;
 	  }
 
 	  else
@@ -185,7 +189,6 @@ std::string HttpResponder::getContentType(std::string fileLocation)
 	if(fileLocation.find(".pdf") != std::string::npos || fileLocation.find(".PDF") != std::string::npos)
 		return "application/pdf";
 
-
 	return "application/octet-stream"; //generic byte stream download
 
 }
@@ -200,62 +203,3 @@ int HttpResponder::getFileSize(std::string fileLocation)
   	else
   		return -1;
 }
-
-
-
-int HttpResponder::readAndWriteData(string FileLocation)
-{
-  char buffer[1024]; 
-  int BlockSize = 1024;
-  int BytesRemaining = 0;
-  int BytesToRead = 0;
-  ifstream is (FileLocation.c_str(), std::ifstream::binary);
-  ofstream outfile ("new.html",std::ofstream::binary);
-
-  if (is) 
-  {
-    is.seekg (0, is.end);
-    int length = is.tellg();
-    is.seekg (0, is.beg);
-
-    BytesRemaining = length;
-    while (BytesRemaining > 0 && is)
-    {
-      if (BlockSize > BytesToRead)
-        BytesToRead = length;
-      else
-        BytesToRead = BlockSize;
-      is.read (buffer, BytesToRead);
-      BytesRemaining -= BytesToRead;
-      outfile.write (buffer, BytesToRead);
-    }
-
-    if (!is)
-      cout << "error: only " << is.gcount() << " could be read";
-    is.close();
-    outfile.close ();
-  }
-  else
-  {
-    cout << "File not found.";
-  }  
-
-  	int totalBytesWritten = 0;
-    int bytesWritten = 0;
-
-    bytesWritten = write(mSockFd, mOutputHeader.c_str(), mOutputHeader.length());
-
-    if(bytesWritten < 0)
-    {
-    	return -1;
-    }
-
-    totalBytesWritten += bytesWritten;
-
-    bytesWritten = write(mSockFd,mOutputData.c_str(), mOutputData.length());
-
-    totalBytesWritten += bytesWritten;
-
-    return totalBytesWritten;
-}
-

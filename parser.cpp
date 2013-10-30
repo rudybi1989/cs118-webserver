@@ -7,13 +7,6 @@ using namespace std;
  // constructor
 ClientRequestMsgDecode::ClientRequestMsgDecode (char * Msg) 
 {
-  /*ClientRequestMsg = std::string (Msg);
-    std::regex e("(GET|PUT|HEAD|DELETE)\\s(.*)", std::regex_constants::extended);
-    std::smatch m;
-    std::regex_match (ClientRequestMsg, m, e);
-    for (unsigned int i=0; i < m.size(); i++)
-      std::cout << m[i] << std::endl;*/
-
 
   int len = strlen(Msg), i;
   /*Default values*/
@@ -69,13 +62,19 @@ ClientRequestMsgDecode::ClientRequestMsgDecode (char * Msg)
       HTTP_ConnectionType = CONNECTION_KEEP_ALIVE;
   }
   char *EndSignature = strstr(Msg, "\r\n\r\n");
+
+  if (EndSignature != 0) EndSignatureFound = true;
+
+
+  /*
   cout << "**Parser Output**:" <<endl;
   cout << "FileLocation: " << FileLocation << endl;
   cout << "Req:" << HTTP_Request << " =" <<Request << endl;
   cout << "Ver:" << HTTP_Version << " =" << HTTPVersion << endl;
   cout << "ConnType:"<< HTTP_ConnectionType << "=\"" << ConnectionType << "\""<< endl; 
-  if (EndSignature != 0) EndSignatureFound = true;
   cout << "LastSet =" << EndSignatureFound << "END"<<endl;
+  */
+  
   // Free the buffers.
   delete [] Request;
   delete [] FileLocation;
