@@ -34,8 +34,6 @@ int main(int argc, char *argv[])
 
     HttpResponder hr;
 
-
-
     //create, bind, listen to socket and check for errors
     socketFd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
@@ -75,7 +73,6 @@ int main(int argc, char *argv[])
         if(FD_ISSET(socketFd, &activeFdSet))
         {
             //Get and set new socket in the active FD set.
-
             newSocket = accept(socketFd, (struct sockaddr *) &clientAddr, &clientLength);
 
             if (newSocket < 0)
@@ -92,7 +89,6 @@ int main(int argc, char *argv[])
             hr.readRequest(newSocket);
             hr.logRequestToConsole();
             hr.processRequest();
-            hr.writeOnTCP(newSocket);
             close(newSocket);
         }
     }

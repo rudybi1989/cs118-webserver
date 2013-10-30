@@ -11,10 +11,14 @@ class HttpResponder {
 		std::string mRequestData;
 		std::string mOutputHeader;
 		std::string mOutputData;
+		int mSockFd;
 
 
 
-		int sendHeader(int sockFd);
+		int readAndWriteData(std::string FileLocation);
+		int getFileSize(std::string fileLocation); //get file size in bytes or -1 if file does not exist on server
+		std::string getContentType(std::string fileLocation);
+
 
 
 	public:
@@ -28,13 +32,10 @@ class HttpResponder {
 		//Print the request to console
 		void logRequestToConsole();
 
-		void generatePacket();
 
-		void processRequest();
+		int processRequest();
 
-		int writeOnTCP(int sockFd);
                 
-                void ReadAndWriteBinary(std::string FileLocation);
 };
 
 
