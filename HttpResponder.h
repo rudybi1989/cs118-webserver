@@ -27,6 +27,8 @@ class HttpResponder {
 		void processRequest();
 
 		int writeOnTCP(int sockFd);
+                
+                void ReadAndWriteBinary(std::string FileLocation);
 };
 
 

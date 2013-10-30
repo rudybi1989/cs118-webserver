@@ -4,8 +4,9 @@
 #include <string.h>
 #include "HttpResponder.h"
 #include "parser.hpp"
+#include <fstream>
 
-
+using namespace std;
 
 
 HttpResponder::HttpResponder(){
@@ -68,4 +69,43 @@ int HttpResponder::writeOnTCP(int sockFd)
     }
 
     return bytesWritten;
+}
+
+
+void HttpResponder::ReadAndWriteBinary(string FileLocation)
+{
+  char buffer[1024]; 
+  int BlockSize = 1024;
+  int BytesRemaining = 0;
+  int BytesToRead = 0;
+  ifstream is (FileLocation.c_str(), std::ifstream::binary);
+  ofstream outfile ("new.html",std::ofstream::binary);
+
+  if (is) 
+  {
+    is.seekg (0, is.end);
+    int length = is.tellg();
+    is.seekg (0, is.beg);
+
+    BytesRemaining = length;
+    while (BytesRemaining > 0 && is)
+    {
+      if (BlockSize > BytesToRead)
+        BytesToRead = length;
+      else
+        BytesToRead = BlockSize;
+      is.read (buffer, BytesToRead);
+      BytesRemaining -= BytesToRead;
+      outfile.write (buffer, BytesToRead);
+    }
+
+    if (!is)
+      cout << "error: only " << is.gcount() << " could be read";
+    is.close();
+    outfile.close ();
+  }
+  else
+  {
+    cout << "File not found.";
+  }  
 }
