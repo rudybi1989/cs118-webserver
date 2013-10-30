@@ -91,6 +91,7 @@ int HttpResponder::processRequest() {
 	{
 		httpStatus = "404 File Not Found";
 		fileLocation = "static/404.html";
+		requestedContentSize = getFileSize(fileLocation); //get file size of 404 HTML page now
 	}
 
 	contentType = getContentType(fileLocation);
@@ -108,6 +109,9 @@ int HttpResponder::processRequest() {
 	mOutputHeader.append("Connection: close" + CRLF); //always close connection for our server
     mOutputHeader.append(CRLF); //end message
 
+    cout << "File Location is: " << fileLocation << endl;
+    cout << "File size is: " << requestedContentSize << endl;
+    cout << "Content Type is: " << contentType << endl;
    
     //write head
     int bytesWritten = write(mSockFd, mOutputHeader.c_str(), mOutputHeader.length());
