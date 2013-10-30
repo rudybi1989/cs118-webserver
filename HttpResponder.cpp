@@ -81,13 +81,13 @@ int HttpResponder::processRequest() {
 	if(msgDecoder.HTTP_Request != HTTP_REQ_GET) //Server only supports GET requests
 	{
 		httpStatus = "501 Not Implemented"; 
-		fileLocation = "501.html";
+		fileLocation = "static/501.html";
 	}
 
 	if(!msgDecoder.EndSignatureFound) //the HTTP request message was not valid
 	{
 		httpStatus = "400 Bad Request"; 
-		fileLocation = "400.html";
+		fileLocation = "static/400.html";
 	}
 
 	requestedContentSize = getFileSize(fileLocation);
@@ -95,7 +95,8 @@ int HttpResponder::processRequest() {
 	if(requestedContentSize < 0) //file does not exist
 	{
 		httpStatus = "404 File Not Found";
-		fileLocation = "404.html";
+		fileLocation = "static/404.html";
+		requestedContentSize = getFileSize(fileLocation); //get file size of 404 HTML page now
 	}
 
 	contentType = getContentType(fileLocation);
@@ -113,6 +114,9 @@ int HttpResponder::processRequest() {
 	mOutputHeader.append("Connection: close" + CRLF); //always close connection
     mOutputHeader.append(CRLF); //end message
 
+    cout << "File Location is: " << fileLocation << endl;
+    cout << "File size is: " << requestedContentSize << endl;
+    cout << "Content Type is: " << contentType << endl;
    
     //write head
     int bytesWritten = write(mSockFd, mOutputHeader.c_str(), mOutputHeader.length());
